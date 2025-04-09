@@ -1,4 +1,4 @@
-ID,Year,Age_Group,State,Medicare_Medicaid_Status,Race,Sex,Medicare_Enrollment_Status,Age_Group,Urban_Rural_Description,Total_Eligible_Users,Total_Medicare_Enrollment,Total_Telehealth_Users,Percentage_of_Medicare_Telehealth_Users
+ID,Year,Age_Group,State,Medicare_Medicaid_Status,Race,Sex,Medicare_Enrollment_Status,Age_Grouping,Urban_Rural_Description,Total_Eligible_Users,Total_Medicare_Enrollment,Total_Telehealth_Users,Percentage_of_Medicare_Telehealth_Users
 1,2020,All,Alabama,All,All,All,All,All,All,492293.0,504096.33333,206967.0,0.4204
 2,2020,All,Alabama,All,All,All,All,All,Rural,147873.0,150932.91667,56053.0,0.3791
 3,2020,All,Alabama,All,All,All,All,All,Urban,343244.0,351944.58333,150453.0,0.4383
