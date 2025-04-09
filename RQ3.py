@@ -1,29 +1,62 @@
+import oracledb
 import pandas as pd
-import sqlite3
+from dotenv import load_dotenv
+import os
+import matplotlib.pyplot as plt
 
-df1 = pd.read_csv("mortality.csv")
-df2 = pd.read_csv("telehealth.csv")
+# Load environment variables from .env file
+load_dotenv()
 
-conn = sqlite3.connect("my_database.db")
+# Retrieve CWL and SNUM from environment variables
+cwl = os.getenv('CWL')
+snum = os.getenv('SNUM')
 
-df1.to_sql("mortality", conn, if_exists="replace", index=False)
-df2.to_sql("telehealth", conn, if_exists="replace", index=False)
+# Make Oracle SQLPlus connection
+dsn = oracledb.makedsn("localhost", 1522, service_name="stu")
+connection = oracledb.connect(user=f"ora_{cwl}", password=f"a{snum}", dsn=dsn)
 
-# --- SQL Query: Which groups used telehealth the most between age and race (2020–2024) ---
+cur = connection.cursor()
+
 query = """
 SELECT 
-    "Age_Group",
-    "Race",
-    SUM("Total_Telehealth_Users") AS total_users
-FROM telehealth
-WHERE "Year" BETWEEN 2020 AND 2024
-GROUP BY "Age_Group", "Race"
-ORDER BY total_users DESC;
+    "AGE_GROUP",
+    "RACE",
+    SUM("TOTAL_TELEHEALTH_USERS") AS TOTAL_USERS
+FROM TELEHEALTH
+WHERE "YEAR" BETWEEN 2020 AND 2024
+GROUP BY "AGE_GROUP", "RACE"
+ORDER BY TOTAL_USERS DESC
 """
 
-results = pd.read_sql_query(query, conn)
-print("🔹 Top digital healthcare users by Age Group and Race (2020–2024):")
-print(results)
-results.to_csv("top_telehealth_users_by_age_race_3RQ.csv", index=False)
+cur.execute(query)
 
-conn.close()
+rows = cur.fetchall()
+columns = [col[0] for col in cur.description]
+
+df = pd.DataFrame(rows, columns=columns)
+
+# Save the DataFrame to a CSV file in the data directory
+data_dir = "data/processed_data"
+df.to_csv(os.path.join(data_dir, "research_question_3.csv"), index=False)
+
+print(df)
+
+df["LABEL"] = df["AGE_GROUP"] + " - " + df["RACE"]
+
+# Plot the top N combinations (e.g., top 15 for clarity)
+# top_n = 15
+# top_data = df.head(top_n)
+
+# Create horizontal bar chart
+plt.figure(figsize=(12, 8))
+plt.barh(df["LABEL"], df["TOTAL_USERS"], color="teal")
+plt.xlabel("Total Telehealth Users", fontsize=14)
+plt.ylabel("Age Group - Race", fontsize=14)
+plt.title("Top Digital Healthcare Users by Age Group and Race (2020–2024)", fontsize=16)
+plt.gca().invert_yaxis()  # Highest value at top
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.tight_layout()
+
+# Save and display the figure
+plt.savefig("pics/top_telehealth_users_by_age_race.png", dpi=300)
