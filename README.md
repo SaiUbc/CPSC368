@@ -149,3 +149,16 @@ Ensure the following Python packages are installed:
 
 ```bash
 pip install pandas sqlite3 matplotlib oracledb dotenv
+```
+
+## LICENSE
+
+This project is licensed under the MIT License.
+You are free to use, modify, and distribute this project for personal or academic purposes.
+
+See the LICENSE file for more details.
+
+## Acknowledgements
+
+Developed by Sai Pusuluri, Elias Khan, Angus Lau as part of CPSC 368: Databases in Data Science at UBC.
+Special thanks to instructors and data providers from CMS.gov.
