@@ -131,6 +131,106 @@ GROUP BY "Age_Group", "Race"
 ORDER BY Total_Users DESC;
 ```
 
+---
+## 📥 6. SQL Script for Data Loading
+
+This section provides a step-by-step guide on how to upload CSV files to the Oracle SQL Plus server on the UBC CS department server. The process includes copying necessary files, creating database tables, generating SQL `INSERT` statements from CSV data, and inserting them into the database.
+
+---
+
+### 📁 6.1 Copy Files to the CS Server
+
+Use the following `scp` command to copy over the preprocessed CSV files, SQL schema file, and Python script (the given `insert_sql.py` file) from your local machine to the UBC CS server:
+
+```bash
+scp insert_sql.py create_tables.sql telehealth.csv mortality.csv cwl@remote.students.cs.ubc.ca:~/CPSC368_Group_Project/
+```
+
+> 🔁 Replace `cwl` with your actual CWL ID.
+
+---
+
+### 🔐 6.2 SSH into Your CS Server
+
+Once the files are copied, SSH into the CS server and navigate to the project directory:
+
+```bash
+ssh cwl@remote.students.cs.ubc.ca
+cd ~/CPSC368_Group_Project
+```
+
+---
+
+### 🛠️ 6.3 Run `create_tables.sql` in SQL Plus
+
+Log into SQL Plus and execute the SQL script to create the required tables:
+
+```sql
+sqlplus ora_CWLid@stu
+start create_tables.sql;
+exit;
+```
+
+> 🔁 Replace `ora_CWLid` with your actual Oracle CWL ID.
+
+---
+
+### 🐍 6.4 Run the Python Script to Generate SQL Insert Statements
+
+The following Python script reads the CSV files and converts them into SQL `INSERT` statements:
+
+```bash
+python3 insert_sql.py
+```
+
+This will generate the following files:
+
+- `insert_telehealth.sql`
+- `insert_mortality.sql`
+
+---
+
+### 💻 6.5 Log Into SQL Plus
+
+To insert data into the tables, log into SQL Plus again:
+
+```bash
+sqlplus ora_CWLid@stu
+```
+
+---
+
+### 🚫 6.6 Disable Variable Substitution
+
+SQL Plus treats ampersands (`&`) as substitution variables. Disable this feature to avoid substitution errors:
+
+```sql
+SET DEFINE OFF;
+```
+
+---
+
+### 📤 6.7 Run Insert Scripts
+
+Execute the generated SQL insert scripts to populate your database:
+
+```sql
+start insert_telehealth.sql;
+start insert_mortality.sql;
+```
+
+---
+
+### ✅ 6.8 Verify Data Insertion
+
+Run the following SQL queries to confirm the number of rows inserted:
+
+```sql
+SELECT COUNT(*) FROM telehealth;
+SELECT COUNT(*) FROM mortality;
+```
+
+---
 
 
 ## 📊 Sample Visualizations
