@@ -6,9 +6,9 @@ This project explores the **adoption** and **impact** of digital healthcare serv
 
 ## ❓ Research Questions
 
-- **RQ1:** Has the adoption of digital healthcare in the United States increased from 2020 to 2024?  
-- **RQ2:** Did the use of digital healthcare services have an impact on the number of hospital deaths from 2020 to 2022? *(Coming soon)*  
-- **RQ3:** Which demographic groups used digital healthcare the most between 2020 and 2024 (based on age and race)?
+- **RQ1:** Has the adoption of digital healthcare in the United States increased from 2020 to 2024? 
+- **RQ2:** Did the use of digital healthcare services have an impact on mortality rates during the years 2020-2022? 
+- **RQ3:** Which groups of people used digital healthcare services the most between age and race in 2020 to 2024 in the United States?
 
 ---
 
@@ -74,6 +74,65 @@ This project uses two public datasets:
 
 ---
 
+## 📋 SQL Queries
+
+### RQ1 – Has the adoption of digital healthcare increased from 2020 to 2024?
+
+```sql
+SELECT 
+    "Year",
+    SUM("Total_Telehealth_Users") AS total_users
+FROM telehealth
+WHERE "Year" BETWEEN 2020 AND 2024
+GROUP BY "Year"
+ORDER BY "Year";
+```
+
+### RQ2 – Did digital healthcare use impact mortality from 2020 to 2022?
+```sql
+SELECT 
+    M."Year",
+    M."Sex",
+    T.Total_Telehealth_Users,
+    M.Total_Deaths,
+    ROUND(M.Total_Deaths * 1000.0 / NULLIF(T.Total_Telehealth_Users, 0), 2) AS Deaths_Per_1000_Users
+FROM (
+    SELECT 
+        "Year",
+        "Sex",
+        SUM("Deaths") AS Total_Deaths
+    FROM mortality
+    WHERE "Sex" IN ('Male', 'Female')
+    GROUP BY "Year", "Sex"
+) M
+JOIN (
+    SELECT 
+        "Year",
+        "Sex",
+        SUM("Total_Telehealth_Users") AS Total_Telehealth_Users
+    FROM telehealth
+    WHERE "Sex" IN ('Male', 'Female') AND "Age_Group" = 'All'
+    GROUP BY "Year", "Sex"
+) T
+ON M."Year" = T."Year" AND M."Sex" = T."Sex"
+WHERE M."Year" BETWEEN 2020 AND 2022
+ORDER BY M."Year", M."Sex";
+```
+
+### RQ3 – Which age and race groups used telehealth the most from 2020 to 2024?
+```sql
+SELECT 
+    "Age_Group",
+    "Race",
+    SUM("Total_Telehealth_Users") AS Total_Users
+FROM telehealth
+WHERE "Year" BETWEEN 2020 AND 2024
+GROUP BY "Age_Group", "Race"
+ORDER BY Total_Users DESC;
+```
+
+
+
 ## 📊 Sample Visualizations
 
 Below are a few sample plots generated from the analysis:
@@ -89,4 +148,4 @@ Below are a few sample plots generated from the analysis:
 Ensure the following Python packages are installed:
 
 ```bash
-pip install pandas sqlite3 matplotlib
+pip install pandas sqlite3 matplotlib oracledb dotenv
