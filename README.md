@@ -29,7 +29,7 @@ This project explores the **adoption** and **impact** of digital healthcare serv
 | `README.md`            | Project documentation and usage guide                                       |
 | `LICENSE`              | MIT License                                                                 |
 
-Note: Please do make a .env file when you clone this repo and put your `snum` as student number and `cwl` as your campus wide login.
+Note: Please do make a `.env` file when you clone this repo and put your `SNUM` as student number and `CWL` as your campus wide login.
 
 ---
 
